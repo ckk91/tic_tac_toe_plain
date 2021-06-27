@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Plain old Tic Tac Toe</title>
+</head>
+<body>
+  <h1 id="game-status"></h1>
+  <button id="game-button" onclick="play()">S T A R T</button>
+  <table id="game"></table>
+<script>
+  var DEBUG = false;
+  var EMPTY_FIELD = 0;
+  var PLAYER_A_FIELD = 1;
+  var PLAYER_B_FIELD = 2;
+  
+  var game = {
+    // view
+    view: document.getElementById('game'),
+    statusView: document.getElementById('game-status'),
+    btn: document.getElementById('game-button'),
+    // state
+    field: [],
+    isActive: false,  
+    endings: {true: 'gewinnt', false: 'Gleichstand'},
+    currentPlayer: PLAYER_A_FIELD,
+    playerA: {
+      icon: 'img/x.png',
+      name: 'Player A',
+      value: PLAYER_A_FIELD
+    },
+    playerB: {
+      icon: 'img/o.png',
+      name: 'Player B',
+      value: PLAYER_B_FIELD
+    },
+    firstRun: true
+  };
+  game.playerMap=[-1, game.playerA, game.playerB];  // convenience
+    
+  init();
+  
+  function init() {
+  	game.currentPlayer = PLAYER_A_FIELD;
+    
+    // model
+    game.field = [[0, 0, 0], [0, 0, 0],[0, 0, 0]];
+    
+    // field init
+    for (var i = 0; i < 3; i++) {
+      var row = document.createElement('tr');
+      
+      for (var j = 0; j < 3; j++){
+        var col = document.createElement('td');
+        col.x = j;
+        col.y = i;
+        col.addEventListener('click', playerTurn);
+        row.appendChild(col);
+      }
+      game.view.appendChild(row);
+    }
+  }
+    
+  function checkGame(x, y, playerval) {
+    if (isRowWin(game.field, y,playerval) ||
+        isColWin(game.field, x, playerval) ||
+        isDiagWin(game.field, playerval)) {
+      return true;
+    }
+    if (isDraw(game.field)) {
+    	return false;
+    }
+    // continue playing
+  }
+  function isRowWin(field, y, playerval) {
+    return field[y].reduce(function(acc, curr){ return acc + curr;}) == playerval*3 &&
+        field[y].filter(function (val){return val == 0;}).length == 0;
+  }
+  function isColWin(field, x, playerval) {
+    return field[0][x] +field[1][x] +field[2][x] == playerval*3 && 
+       field.filter(function (val) {return val[x] == 0;}).length == 0;
+  }
+  function isDiagWin(field, playerval) {
+    var descMask = [1,0,0,0,1,0,0,0,1];
+    var ascMask = [0,0,1,0,1,0,1,0,0];
+    var matchDesc = true;
+    var matchAsc = true; 
+    var flatfield= field.flat();
+    for (var i = 0; i < flatfield.length; i++) {
+      if (flatfield[i]*descMask[i] != playerval*descMask[i]) matchDesc = false; 
+      if (flatfield[i]*ascMask[i] != playerval*ascMask[i]) matchAsc = false;
+    }  
+    return matchDesc || matchAsc;
+  }
+  
+  function isDraw(field) {
+    return field.flat().filter(function (v) {return v == 0;}).length == 0;
+  }
+  
+  function makeMark(node) {
+    var icon = document.createElement('img');
+    icon.src=game.currentPlayer == 1 ? game.playerA.icon : game.playerB.icon;
+    return icon;
+  }
+  
+  function playerTurn(event) {
+    if (!game.isActive) return;
+    
+  	// handle click
+    var target = event.target;
+    var x = target.x;
+    var y = target.y;
+    var result;
+    if (target.childElementCount == 0) {  // ensure is empty and not more than 1
+	    target.appendChild(makeMark(target));
+		game.field[y][x] = game.currentPlayer;
+      if ((result = checkGame(x,y,game.currentPlayer)) != undefined){
+        stop(result);
+      } else {  // switch players
+        game.currentPlayer = game.currentPlayer == 1? game.currentPlayer = 2: game.currentPlayer = 1;
+        game.statusView.textContent = game.playerMap[game.currentPlayer].name + " ist am Zug.";
+      }
+    }
+  }
+  
+  function stop(result) {
+    game.isActive = false;
+    game.btn.style.display = 'inline-block';
+    game.statusView.textContent = result?
+      game.playerMap[game.currentPlayer].name + " " + game.endings[result] 
+      : game.endings[result];
+  }
+  
+  function clearView() {
+        for (var i=game.view.children.length-1;i>=0; i--) {
+          game.view.children[i].remove();
+      }
+  }
+  
+  function play() { 
+    game.btn.style.display = 'none';
+    
+    if (!game.firstRun) {
+  	  clearView();
+      init();  // for subsequent plays
+    }
+    game.isActive = true;
+    game.firstRun = false;  // good enough
+    game.statusView.textContent = game.playerMap[game.currentPlayer].name + " ist am Zug.";
+  }
+
+  
+  // === TEST LOGIC ===
+  if (DEBUG) testLogic();
+  function testLogic() {
+	// rowWin
+    console.log(isRowWin([[1,1,1]], 0, game.playerA.value) == true || "RowWin pos failed");
+    console.log(isRowWin([[1,2,1]], 0, game.playerA.value) == false || "RowWin neg failed");
+    console.log(isRowWin([[1,2,0]], 0, game.playerA.value) == false || "RowWin empty failed");
+    // colWin
+    console.log(isColWin([[1],[1],[1]], 0, game.playerA.value) == true || "ColWin pos failed");
+    console.log(isColWin([[1],[2],[1]], 0, game.playerA.value) == false || "ColWin neg failed");
+    console.log(isColWin([[1],[2],[0]], 0, game.playerA.value) == false || "ColWin empty failed");
+    // diag win
+    console.log(isDiagWin([[1,2,0],[0,1,0],[0,2,1]], game.playerA.value) == true || "DiagWin desc failed");
+    console.log(isDiagWin([[0,2,1],[0,1,0],[1,2,0]], game.playerA.value) == true || "DiagWin asc failed");
+    console.log(isDiagWin([[1,2,1],[2,1,2],[1,2,1]], game.playerA.value) == true || "DiagWin cross failed");
+  }
+  
+</script>
+</body>
+</html>
+

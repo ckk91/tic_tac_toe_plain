@@ -123,13 +123,13 @@
                 }
 
                 function isRowWin(field, y, playerval) {
-                        return field[y].reduce((acc, curr) => acc + curr) == playerval * 3 &&
-                                field[y].filter(val => val == 0).length == 0;
+                        return field[y].reduce((acc, curr) => acc + curr) === playerval * 3 &&
+                                field[y].filter(val => val === 0).length === 0;
                 }
 
                 function isColWin(field, x, playerval) {
-                        return field[0][x] + field[1][x] + field[2][x] == playerval * 3 &&
-                                field.filter(function (val) { return val[x] == 0; }).length == 0;
+                        return field[0][x] + field[1][x] + field[2][x] === playerval * 3 &&
+                                field.filter(function (val) { return val[x] === 0; }).length === 0;
                 }
 
                 function isDiagWin(field, playerval) {
@@ -146,12 +146,12 @@
                 }
 
                 function isDraw(field) {
-                        return field.flat().filter(function (v) { return v == 0; }).length == 0;
+                        return field.flat().filter(function (v) { return v === 0; }).length === 0;
                 }
 
                 function makeMark(node) {
                         var icon = document.createElement('img');
-                        icon.src = game.currentPlayer == 1 ? game.playerA.icon : game.playerB.icon;
+                        icon.src = game.currentPlayer === 1 ? game.playerA.icon : game.playerB.icon;
                         return icon;
                 }
 
@@ -163,13 +163,13 @@
                         var x = target.x;
                         var y = target.y;
                         var result;
-                        if (target.childElementCount == 0) {  // ensure is empty and not more than 1
+                        if (target.childElementCount === 0) {  // ensure is empty and not more than 1
                                 target.appendChild(makeMark(target));
                                 game.field[y][x] = game.currentPlayer;
                                 if ((result = checkGame(x, y, game.currentPlayer)) != undefined) {
                                         stop(result);
                                 } else {  // switch players
-                                        game.currentPlayer = game.currentPlayer == 1 ? game.currentPlayer = 2 : game.currentPlayer = 1;
+                                        game.currentPlayer = game.currentPlayer === 1 ? game.currentPlayer = 2 : game.currentPlayer = 1;
                                         game.statusView.textContent = game.playerMap[game.currentPlayer].name + "'s turn.";
                                 }
                         }
@@ -194,17 +194,17 @@
                 if (DEBUG) testLogic();
                 function testLogic() {
                         // rowWin
-                        console.log(isRowWin([[1, 1, 1]], 0, game.playerA.value) == true || "RowWin pos failed");
-                        console.log(isRowWin([[1, 2, 1]], 0, game.playerA.value) == false || "RowWin neg failed");
-                        console.log(isRowWin([[1, 2, 0]], 0, game.playerA.value) == false || "RowWin empty failed");
+                        console.log(isRowWin([[1, 1, 1]], 0, game.playerA.value) === true || "RowWin pos failed");
+                        console.log(isRowWin([[1, 2, 1]], 0, game.playerA.value) === false || "RowWin neg failed");
+                        console.log(isRowWin([[1, 2, 0]], 0, game.playerA.value) === false || "RowWin empty failed");
                         // colWin
-                        console.log(isColWin([[1], [1], [1]], 0, game.playerA.value) == true || "ColWin pos failed");
-                        console.log(isColWin([[1], [2], [1]], 0, game.playerA.value) == false || "ColWin neg failed");
-                        console.log(isColWin([[1], [2], [0]], 0, game.playerA.value) == false || "ColWin empty failed");
+                        console.log(isColWin([[1], [1], [1]], 0, game.playerA.value) === true || "ColWin pos failed");
+                        console.log(isColWin([[1], [2], [1]], 0, game.playerA.value) === false || "ColWin neg failed");
+                        console.log(isColWin([[1], [2], [0]], 0, game.playerA.value) === false || "ColWin empty failed");
                         // diag win
-                        console.log(isDiagWin([[1, 2, 0], [0, 1, 0], [0, 2, 1]], game.playerA.value) == true || "DiagWin desc failed");
-                        console.log(isDiagWin([[0, 2, 1], [0, 1, 0], [1, 2, 0]], game.playerA.value) == true || "DiagWin asc failed");
-                        console.log(isDiagWin([[1, 2, 1], [2, 1, 2], [1, 2, 1]], game.playerA.value) == true || "DiagWin cross failed");
+                        console.log(isDiagWin([[1, 2, 0], [0, 1, 0], [0, 2, 1]], game.playerA.value) === true || "DiagWin desc failed");
+                        console.log(isDiagWin([[0, 2, 1], [0, 1, 0], [1, 2, 0]], game.playerA.value) === true || "DiagWin asc failed");
+                        console.log(isDiagWin([[1, 2, 1], [2, 1, 2], [1, 2, 1]], game.playerA.value) === true || "DiagWin cross failed");
                 }
 
         </script>

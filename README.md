@@ -4,6 +4,8 @@ Gotta get that formal degree somehow for stuff I've been doing for years. ¯\\\_
 
 Play it here: https://ckk91.github.io/tic_tac_toe_plain/
 
+![The Game](./ttt_demo.png?raw=true "TDemo of the Tic Tac Toe Game")
+
 ## Features
 - Over-engineered game logic :hammer_and_wrench:
 - Minimal tests :microscope:
